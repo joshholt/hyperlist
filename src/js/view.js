@@ -20,7 +20,9 @@ const ListItem = ({ value,id,completed,toggle,destroy }) => (
 );
 
 const view = (state, actions) => (
-  <div>
+  <div oncreate={
+      () => actions.setStateFromLocalStorage()
+  }>
     <h1><strong>Hyper</strong>List</h1>
     <AddItem add={actions.add} input={actions.input} value={state.input} placeholder={state.placeholder} />
     <ul id='list'>

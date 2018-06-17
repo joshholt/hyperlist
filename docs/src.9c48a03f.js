@@ -103,7 +103,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({10:[function(require,module,exports) {
+})({11:[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -459,9 +459,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var actions = {
+  setStateFromLocalStorage: function setStateFromLocalStorage() {
+    if (localStorage.getItem('items')) {
+      return function (state) {
+        return {
+          input: '',
+          items: JSON.parse(localStorage.getItem('items'))
+        };
+      };
+    } else {
+      return function (state) {
+        return {
+          input: '',
+          items: []
+        };
+      };
+    }
+  },
   add: function add() {
-    return function (state) {
-      return {
+    return function (state, actions) {
+      var st = {
         input: '',
         items: state.items.concat({
           value: state.input,
@@ -469,6 +486,9 @@ var actions = {
           id: Date.now()
         })
       };
+
+      localStorage.setItem('items', JSON.stringify(st.items));
+      return st;
     };
   },
   input: function input(_ref) {
@@ -477,29 +497,36 @@ var actions = {
   },
   toggle: function toggle(id) {
     return function (state) {
-      return {
+      var st = {
         items: state.items.map(function (item) {
           return id === item.id ? Object.assign({}, item, { completed: !item.completed }) : item;
         })
       };
+      localStorage.setItem('items', JSON.stringify(st.items));
+      return st;
     };
   },
   destroy: function destroy(id) {
     return function (state) {
-      return {
+      var st = {
         items: state.items.filter(function (item) {
           return item.id !== id;
         })
       };
+      localStorage.setItem('items', JSON.stringify(st.items));
+      return st;
     };
   },
   clearAllCompleted: function clearAllCompleted(_ref2) {
     var items = _ref2.items;
-    return {
+
+    var st = {
       items: items.filter(function (item) {
         return !item.completed;
       })
     };
+    localStorage.setItem('items', JSON.stringify(st.items));
+    return st;
   }
 };
 
@@ -566,7 +593,9 @@ var ListItem = function ListItem(_ref2) {
 var view = function view(state, actions) {
   return (0, _hyperapp.h)(
     'div',
-    null,
+    { oncreate: function oncreate() {
+        return actions.setStateFromLocalStorage();
+      } },
     (0, _hyperapp.h)(
       'h1',
       null,
@@ -602,7 +631,7 @@ var view = function view(state, actions) {
 };
 
 exports.default = view;
-},{"hyperapp":10}],20:[function(require,module,exports) {
+},{"hyperapp":11}],20:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -690,7 +719,7 @@ require('./scss/index.scss');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var main = (0, _hyperapp.app)(_state2.default, _actions2.default, _view2.default, document.body);
-},{"hyperapp":10,"./js/state.js":6,"./js/actions.js":7,"./js/view.js":8,"./scss/index.scss":9}],22:[function(require,module,exports) {
+},{"hyperapp":11,"./js/state.js":6,"./js/actions.js":7,"./js/view.js":8,"./scss/index.scss":9}],22:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -719,7 +748,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '60046' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '51708' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
